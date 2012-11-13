@@ -151,6 +151,7 @@ public class Window {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				client.sendText(textField.getText());
+				textField.setText("");
 			}
 		});
 		btnSend.setBounds(498, 342, 81, 29);
@@ -169,7 +170,6 @@ public class Window {
 	{
 		client.stopClient();
 		active.stop();
-		active.destroy();
 	}
 	
 	static void redirectSystemStreams() {

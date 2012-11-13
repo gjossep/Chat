@@ -39,38 +39,24 @@ public class User {
 				sendMessage("User Found!");
 				userByName.sendMessage("Someone wants to talk to you!");
 				userByName.sendMessage("His name is "+userName);
+				userByName.setTalkingTo(userName);
+				System.out.println("He is now talking to "+userByName.getTalkingTo());
+				userByName.checkInputs();
 			}
 			
 			checkInputs();
+			
 	}
 	
-	private void checkInputs() {
-		 try {
-			DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-			while(true)
-			{
-			String text = in.readLine();
-			if(text!=null)
-				{
-					userByName.sendMessage(text);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		 
-	}
+
 
 	public User(String userName, Socket clientSocket)
 	{
 		this.userName = userName;
 		this.clientSocket = clientSocket;
-		
 		Main.registerUserByName(userName, this);
-
 		
 		sendMessage("Hello there!");
-
 
 	}
 
@@ -87,6 +73,33 @@ public class User {
 			e.printStackTrace();
 		}
          
+	}
+	
+	private void checkInputs() {
+		 try {
+			DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+		while(true)
+			{
+				if(talkingTo!=null)
+				{
+					if(userByName!=null)
+					{
+						String text = in.readLine();
+						if(text!=null)
+						{
+							userByName.sendMessage(userName+": "+text);
+							System.out.println(userName+": "+text);
+						}
+					} else {
+						userByName = Main.getUserByName(talkingTo);
+					}
+				} 
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		 
+		 
 	}
 
 	public void shutdown() {
@@ -114,6 +127,9 @@ public class User {
 		return talkingTo;
 	}
 	
+	public void setTalkingTo(String userName2) {
+		this.talkingTo = userName2;
+	}
 	
 
 }
