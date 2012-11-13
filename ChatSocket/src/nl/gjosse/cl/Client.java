@@ -127,4 +127,15 @@ public class Client implements Runnable {
 	}
 
 
+	public void sendText(String text) {
+		try {
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+			out.write(text.getBytes(Charset.forName("UTF-8")));
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 }

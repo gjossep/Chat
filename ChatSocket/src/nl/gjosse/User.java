@@ -15,15 +15,17 @@ public class User {
 	private String userName;
 	private String talkingTo;
 	private Socket clientSocket;
-
+	
+	private User userByName;
+	
 	public User(String userName, String talkingTo, Socket clientSocket) {
 		this.userName = userName;
 		this.talkingTo = talkingTo;
 		this.clientSocket = clientSocket;
 		
-		Main.registerUserByName(userName, this);
+		 Main.registerUserByName(userName, this);
 		
-			User userByName = Main.getUserByName(talkingTo);
+			userByName = Main.getUserByName(talkingTo);
 			System.out.println("User to talk to is "+talkingTo);
 			if(userByName==null)
 			{
@@ -35,9 +37,30 @@ public class User {
 			else
 			{
 				sendMessage("User Found!");
+				userByName.sendMessage("Someone wants to talk to you!");
+				userByName.sendMessage("His name is "+userName);
 			}
+			
+			checkInputs();
 	}
 	
+	private void checkInputs() {
+		 try {
+			DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+			while(true)
+			{
+			String text = in.readLine();
+			if(text!=null)
+				{
+					userByName.sendMessage(text);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		 
+	}
+
 	public User(String userName, Socket clientSocket)
 	{
 		this.userName = userName;
@@ -53,7 +76,6 @@ public class User {
 
 	public void sendMessage(String text) {
 		try{
-		 InputStream in  = clientSocket.getInputStream();
          OutputStream out = clientSocket.getOutputStream();
         
          text = text+"\n";

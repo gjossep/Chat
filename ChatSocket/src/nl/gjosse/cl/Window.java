@@ -32,6 +32,8 @@ public class Window {
 	private static JTextArea textArea;
 	
 	Client client;
+	
+	Thread active;
 
 	/**
 	 * Launch the application.
@@ -145,19 +147,29 @@ public class Window {
 		textField.setColumns(10);
 		
 		JButton btnSend = new JButton("Send");
+		btnSend.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				client.sendText(textField.getText());
+			}
+		});
 		btnSend.setBounds(498, 342, 81, 29);
 		frame.getContentPane().add(btnSend);
 	}
 	
+
 	public void start()
 	{
 		client = new Client(txtUsername.getText(), txtPerson.getText(), txtIp.getText(), txtPort.getText());
-		new Thread(client).start();
+		active = new Thread(client);
+		active.start();
 	}
 	
 	public void stop()
 	{
 		client.stopClient();
+		active.stop();
+		active.destroy();
 	}
 	
 	static void redirectSystemStreams() {
