@@ -134,8 +134,11 @@ public class User {
 			
 			if(text.equalsIgnoreCase("stop"))
 			{
+				if(!talkingTo.equals(""))
+				{
 				Main.removeInput(talkingTo);
 				userByName.talkingTo = "";
+				}
 				
 				Main.removeInput(userName);
 				this.talkingTo = "";
@@ -148,10 +151,12 @@ public class User {
 				String name = text.substring(5);
 				System.out.println("Quiting list is "+name);
 				
+				if(!talkingTo.equals(""))
+				{
 				userByName.sendMessage("Your partner has disconected!");
 				
-				Main.removeInput(userByName.userName);
 				userByName.talkingTo = "";
+				}
 				
 				Main.removeInput(userName);
 				Main.removeUser(userName);

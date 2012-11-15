@@ -1,6 +1,7 @@
 package nl.gjosse.cl;
 
 import java.awt.EventQueue;
+import java.beans.Encoder;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -62,6 +63,7 @@ public class Client implements Runnable {
 			while (!stop) {
 				try{
 			        responseLine = in.readLine();
+			        responseLine = ChatEncoder.decodeString(responseLine);
 			        if(responseLine!=null && !responseLine.startsWith("[*"))
 			        {
 			        	System.out.println(responseLine);
@@ -143,7 +145,7 @@ public class Client implements Runnable {
 		{
 		try{
 	         OutputStream out = socket.getOutputStream();
-	        
+	         text = ChatEncoder.encodeString(text);
 	         text = text+"\n";
 	         out.write(text.getBytes(Charset.forName("UTF-8")));
 	         out.flush();

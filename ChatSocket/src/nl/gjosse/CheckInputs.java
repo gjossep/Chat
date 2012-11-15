@@ -27,12 +27,13 @@ public class CheckInputs implements Runnable {
 						String text = in.readLine();
 						if(text!=null)
 						{
-							if(!text.startsWith("/"))
+							if(!ChatEncoder.decodeString(text).startsWith("/"))
 							{
-							personTo.sendMessage(toCheck.getUserName()+": "+text);
-							System.out.println(toCheck.getUserName()+": "+text);
+							String textToSend = toCheck.getUserName()+": "+ChatEncoder.decodeString(text);
+							personTo.sendMessage(ChatEncoder.encodeString(textToSend));
+							System.out.println(toCheck.getUserName()+": "+ChatEncoder.decodeString(text));
 							} else {
-								toCheck.checkCommand(text);
+								toCheck.checkCommand(ChatEncoder.decodeString(text));
 							}
 						}
 				} 
