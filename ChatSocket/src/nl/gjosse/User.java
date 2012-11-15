@@ -13,7 +13,7 @@ import java.util.TimerTask;
 
 public class User {
 	private String userName;
-	private String talkingTo;
+	private String talkingTo = "";
 	private Socket clientSocket;
 	
 	private User userByName;
@@ -36,18 +36,39 @@ public class User {
 			}
 			else
 			{
+				if(userByName.talkingTo.equals(""))
+				{
 				sendMessage("User Found!");
 				userByName.sendMessage("Someone wants to talk to you!");
 				userByName.sendMessage("His name is "+userName);
 				userByName.setTalkingTo(userName);
 				System.out.println("He is now talking to "+userByName.getTalkingTo());
-				userByName.checkInputs();
+				
+				CheckInputs otherUser = new CheckInputs(userByName, this, userByName.getSocket());
+				Thread active = new Thread(otherUser);
+				active.start();		
+				Main.registerInputByName(talkingTo, active);
+				} else {
+					sendMessage("The person you are trying to talk to is busy at the moment!");
+				}
 			}
 			
-			checkInputs();
+			if(!userByName.talkingTo.equals(""))
+			{
+			CheckInputs thisUser = new CheckInputs(this, userByName, getSocket());
+			Thread active = new Thread(thisUser);
+			active.start();
 			
+			Main.registerInputByName(userName, active);
+			}
 	}
 	
+
+
+	private Socket getSocket() {
+		return clientSocket;
+	}
+
 
 
 	public User(String userName, Socket clientSocket)
@@ -74,33 +95,7 @@ public class User {
 		}
          
 	}
-	
-	private void checkInputs() {
-		 try {
-			DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-		while(true)
-			{
-				if(talkingTo!=null)
-				{
-					if(userByName!=null)
-					{
-						String text = in.readLine();
-						if(text!=null)
-						{
-							userByName.sendMessage(userName+": "+text);
-							System.out.println(userName+": "+text);
-						}
-					} else {
-						userByName = Main.getUserByName(talkingTo);
-					}
-				} 
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		 
-		 
-	}
+
 
 	public void shutdown() {
 
@@ -129,6 +124,39 @@ public class User {
 	
 	public void setTalkingTo(String userName2) {
 		this.talkingTo = userName2;
+	}
+
+
+
+	public void checkCommand(String text) {
+		System.out.println("Checking command...");
+			text = text.replace("/", "");
+			
+			if(text.equalsIgnoreCase("stop"))
+			{
+				Main.removeInput(talkingTo);
+				userByName.talkingTo = "";
+				
+				Main.removeInput(userName);
+				this.talkingTo = "";
+				
+				sendMessage("[*Quit*]");
+				
+			}
+			if(text.contains("quit:"))
+			{
+				String name = text.substring(5);
+				System.out.println("Quiting list is "+name);
+				
+				userByName.sendMessage("Your partner has disconected!");
+				
+				Main.removeInput(userByName.userName);
+				userByName.talkingTo = "";
+				
+				Main.removeInput(userName);
+				Main.removeUser(userName);
+
+			}
 	}
 	
 

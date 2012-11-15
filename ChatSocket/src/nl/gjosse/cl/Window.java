@@ -20,6 +20,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Window {
 
@@ -142,6 +144,16 @@ public class Window {
 		frame.getContentPane().add(separator);
 		
 		textField = new JTextField();
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				if(arg0.getKeyCode()==arg0.VK_ENTER)
+				{
+					client.sendText(textField.getText());
+					textField.setText("");
+				}
+			}
+		});
 		textField.setBounds(239, 341, 268, 28);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
@@ -162,6 +174,7 @@ public class Window {
 	public void start()
 	{
 		client = new Client(txtUsername.getText(), txtPerson.getText(), txtIp.getText(), txtPort.getText());
+		client.stop = false;
 		active = new Thread(client);
 		active.start();
 	}
@@ -169,7 +182,7 @@ public class Window {
 	public void stop()
 	{
 		client.stopClient();
-		active.stop();
+		active.interrupt();
 	}
 	
 	static void redirectSystemStreams() {

@@ -64,6 +64,10 @@ public class MultiThreadedServer implements Runnable{
     public synchronized void stop(){
         this.isStopped = true;
         try {
+        	for(User user: Main.activeUsers)
+        	{
+        		user.sendMessage("[*ServerQuiting*]");
+        	}
             this.serverSocket.close();
         } catch (IOException e) {
             throw new RuntimeException("Error closing server", e);

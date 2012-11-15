@@ -41,7 +41,13 @@ public class WorkerRunnable implements Runnable{
             {
             String[] splited = utf.split(":");
             String userName = splited[0];
-            User newUser = new User(splited[0], splited[1], clientSocket);
+            String talkTo = splited[1];
+            	if(talkTo.equalsIgnoreCase("Random"))
+            	{
+            		talkTo = Main.getRandomUser();
+            	}
+            System.out.println("Talking to: "+talkTo);
+            User newUser = new User(userName, talkTo, clientSocket);
             } else
             {
             	User newUser = new User(utf, clientSocket);

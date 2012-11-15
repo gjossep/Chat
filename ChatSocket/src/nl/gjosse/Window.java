@@ -19,6 +19,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.List;
 
 public class Window {
 
@@ -191,5 +192,23 @@ public class Window {
 		    	  txtpnConnections.append(text);
 		      }
 		    });
+	}
+
+	public static void changeList() {
+		EventQueue.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				List<User> activeUsers = Main.activeUsers;
+				txtpnInfo.setText("");
+				String total = "";
+				for(User user: activeUsers)
+				{
+					total = total+user.getUserName()+"\n";
+				}
+				System.out.println("Did list! List is "+total);
+				txtpnInfo.setText(total);
+			}
+		});
 	}
 }

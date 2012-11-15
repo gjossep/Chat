@@ -23,6 +23,9 @@ public class Client implements Runnable {
 	String person;
 	String ip;
 	int port;
+	
+	static boolean isServerOn = false;
+
 
 	public Client(String username, String person, String ip, String port) {
 		this.userName = username;
@@ -39,7 +42,7 @@ public class Client implements Runnable {
 		System.out.println("Connecting");
 		try {
 			socket = new Socket(ip, port);
-			
+			isServerOn = true;
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			
@@ -75,7 +78,7 @@ public class Client implements Runnable {
 			
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Can't connect to the server, it might be down.");
 		}
 		
 	}
@@ -84,9 +87,10 @@ public class Client implements Runnable {
 			command = command.replace("[*", "");
 			command = command.replace("*]", "");
 			
-			if(command.equalsIgnoreCase("quit"))
+			if(command.equalsIgnoreCase("ServerQuiting"))
 			{
-				shutDown();
+				isServerOn = false;
+				System.out.println("The server turned off...");
 			}
 	}
 
@@ -107,6 +111,8 @@ public class Client implements Runnable {
 
 
 	public void stopClient() {
+		sendText("/quit:"+userName);
+		isServerOn = false;
 		try {
 			stop = true;
 			TimerTask stopSocket = new TimerTask() {
@@ -129,7 +135,12 @@ public class Client implements Runnable {
 
 
 	public void sendText(String text) {
+		if(!text.startsWith("/"))
+		{
 		System.out.println("You: "+text);
+		}
+		if(isServerOn)
+		{
 		try{
 	         OutputStream out = socket.getOutputStream();
 	        
@@ -141,6 +152,9 @@ public class Client implements Runnable {
 			{
 				e.printStackTrace();
 			}
+		} else {
+			System.out.println("There is no connection with the server...");
+		}
 	}
 
 
