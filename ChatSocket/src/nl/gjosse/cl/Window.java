@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -15,11 +16,17 @@ import javax.swing.SwingUtilities;
 import nl.gjosse.MultiThreadedServer;
 
 import java.awt.Color;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -32,6 +39,10 @@ public class Window {
 	private JTextField txtPort;
 	private JTextField textField;
 	private static JTextArea textArea;
+	
+	public static File fileToSend;
+	
+
 	
 	Client client;
 	
@@ -168,6 +179,25 @@ public class Window {
 		});
 		btnSend.setBounds(498, 342, 81, 29);
 		frame.getContentPane().add(btnSend);
+		
+		JButton btnFile = new JButton("File");
+		btnFile.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0)
+			{
+				 final JFileChooser fc = new JFileChooser();
+				 int returnVal = fc.showOpenDialog(frame);
+
+			        if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            File file = fc.getSelectedFile();
+			            fileToSend = file;
+			            textField.setText("FILE: "+file.getName());
+			        } 
+			}
+		});
+		btnFile.setBounds(498, 365, 81, 29);
+		frame.getContentPane().add(btnFile);
+
 	}
 	
 

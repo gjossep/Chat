@@ -3,6 +3,9 @@ package nl.gjosse;
 import java.awt.EventQueue;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +19,7 @@ public class User {
 	private String talkingTo = "";
 	private Socket clientSocket;
 	
+	private boolean sendFile = false;
 	private User userByName;
 	
 	public User(String userName, String talkingTo, Socket clientSocket) {
@@ -162,6 +166,34 @@ public class User {
 				Main.removeUser(userName);
 
 			}
+			
+			if(text.startsWith("file")) {
+				sendFile = true;
+				String[] split = text.split(":");
+				File newFile = new File(System.getProperty("user.home"), "Downloads/"+split[1]);
+
+			    try {
+				    InputStream input = clientSocket.getInputStream();
+					FileOutputStream out = new FileOutputStream(newFile);
+					byte[] buffer = new byte[1024 * 1024];
+
+					int bytesReceived = 0;
+
+					while((bytesReceived = input.read(buffer))>=0) {
+						    if(!sendFile)
+						    {
+						    	break;
+						    }
+					        out.write(buffer,0,bytesReceived);
+					        System.out.println(bytesReceived);
+					    }
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println("File downloaded");
+			}
+			
+			
 	}
 	
 

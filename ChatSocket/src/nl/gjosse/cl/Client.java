@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 import java.beans.Encoder;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -143,6 +145,8 @@ public class Client implements Runnable {
 		}
 		if(isServerOn)
 		{
+		if(!text.startsWith("FILE:"))
+		{
 		try{
 	         OutputStream out = socket.getOutputStream();
 	         text = ChatEncoder.encodeString(text);
@@ -154,8 +158,42 @@ public class Client implements Runnable {
 			{
 				e.printStackTrace();
 			}
+		}
+		else
+		{
+			System.out.println("Sending File...");
+			sendFile();
+		}
 		} else {
 			System.out.println("There is no connection with the server...");
+		}
+	}
+
+
+	private void sendFile() {
+		File sending = Window.fileToSend;
+		sendText("/file:"+sending.getName());
+		try{
+		OutputStream output = socket.getOutputStream();	
+			
+		 FileInputStream fileInputStream = new FileInputStream(sending);
+		 int amountOfBytes = fileInputStream.available();
+		 System.out.println(amountOfBytes);
+		 byte[] buffer = new byte[1024 *1024];
+		 int bytesRead = 0;
+		 
+		 while((bytesRead = fileInputStream.read(buffer))>0)
+		    {
+		        output.write(buffer,0,bytesRead);
+				 output.flush();
+		    }
+		 	socket.shutdownOutput();
+		 	
+		 	DataInputStream in = new DataInputStream(socket.getInputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+			
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 
