@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -135,7 +137,7 @@ public class Window {
 		lblIp.setBounds(77, 195, 31, 16);
 		frame.getContentPane().add(lblIp);
 		
-		txtIp = new JTextField("192.168.178.12");
+		txtIp = new JTextField(getIp());
 		txtIp.setBounds(93, 189, 134, 28);
 		frame.getContentPane().add(txtIp);
 		txtIp.setColumns(10);
@@ -200,6 +202,15 @@ public class Window {
 
 	}
 	
+
+	private String getIp() {
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
 
 	public void start()
 	{

@@ -6,7 +6,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -90,13 +92,40 @@ public class Client implements Runnable {
 	private static void checkCommand(String command) {
 			command = command.replace("[*", "");
 			command = command.replace("*]", "");
-			
+			System.out.println("Checking Command! Command is: "+command);
 			if(command.equalsIgnoreCase("ServerQuiting"))
 			{
 				isServerOn = false;
 				System.out.println("The server turned off...");
 			}
+			if(command.startsWith("file")){
+				getFile(command);
+			}
 	}
+
+	private static void getFile(String text) {
+		System.out.println("Getting file...");
+		String[] split = text.split(":");
+		File newFile = new File(System.getProperty("user.home"), "Downloads/"+split[1]);
+
+	    try {
+		    InputStream input = socket.getInputStream();
+			FileOutputStream out = new FileOutputStream(newFile);
+			byte[] buffer = new byte[1024 * 1024];
+
+			int bytesReceived = 0;
+
+			while((bytesReceived = input.read(buffer))>=0) {
+				 
+			        out.write(buffer,0,bytesReceived);
+			        System.out.println(bytesReceived);
+			    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("File downloaded");
+	}
+
 
 	private static void shutDown() {
 		stop = true;
@@ -187,10 +216,8 @@ public class Client implements Runnable {
 		        output.write(buffer,0,bytesRead);
 				 output.flush();
 		    }
-		 	socket.shutdownOutput();
+		 	output.write(-1);
 		 	
-		 	DataInputStream in = new DataInputStream(socket.getInputStream());
-			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			
 		} catch(Exception e) {
 			e.printStackTrace();

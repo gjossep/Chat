@@ -168,29 +168,27 @@ public class User {
 			}
 			
 			if(text.startsWith("file")) {
-				sendFile = true;
-				String[] split = text.split(":");
-				File newFile = new File(System.getProperty("user.home"), "Downloads/"+split[1]);
-
-			    try {
-				    InputStream input = clientSocket.getInputStream();
-					FileOutputStream out = new FileOutputStream(newFile);
-					byte[] buffer = new byte[1024 * 1024];
-
-					int bytesReceived = 0;
-
-					while((bytesReceived = input.read(buffer))>=0) {
-						    if(!sendFile)
-						    {
-						    	break;
-						    }
-					        out.write(buffer,0,bytesReceived);
-					        System.out.println(bytesReceived);
-					    }
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				System.out.println("File downloaded");
+				userByName.sendMessage("[*"+text+"*]");
+//				sendFile = true;
+//				String[] split = text.split(":");
+//				File newFile = new File(System.getProperty("user.home"), "Downloads/"+split[1]);
+//
+//			    try {
+//				    InputStream input = clientSocket.getInputStream();
+//					FileOutputStream out = new FileOutputStream(newFile);
+//					byte[] buffer = new byte[1024 * 1024];
+//
+//					int bytesReceived = 0;
+//
+//					while((bytesReceived = input.read(buffer))>=0) {
+//						 
+//					        out.write(buffer,0,bytesReceived);
+//					        System.out.println(bytesReceived);
+//					    }
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				System.out.println("File downloaded");
 			}
 			
 			
