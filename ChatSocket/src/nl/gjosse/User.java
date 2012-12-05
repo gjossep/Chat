@@ -169,7 +169,7 @@ public class User {
 			
 			if(text.startsWith("file")) {
 				userByName.sendMessage("[*"+text+"*]");
-//				sendFile = true;
+				sendFile = true;
 //				String[] split = text.split(":");
 //				File newFile = new File(System.getProperty("user.home"), "Downloads/"+split[1]);
 //
@@ -177,21 +177,31 @@ public class User {
 //				    InputStream input = clientSocket.getInputStream();
 //					FileOutputStream out = new FileOutputStream(newFile);
 //					byte[] buffer = new byte[1024 * 1024];
-//
+//					int size = Integer.parseInt(split[2]);
 //					int bytesReceived = 0;
 //
-//					while((bytesReceived = input.read(buffer))>=0) {
-//						 
-//					        out.write(buffer,0,bytesReceived);
-//					        System.out.println(bytesReceived);
-//					    }
+//					while (size > 0 && (bytesReceived = input.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1)     
+//			        {     
+//			            out.write(buffer, 0, bytesReceived);     
+//			            size -= bytesReceived;
+//			            System.out.println("Size: "+size);
+//			            System.out.println("Bytes R: "+bytesReceived);
+//			        } 
+//					out.close();
 //				} catch (Exception e) {
 //					e.printStackTrace();
 //				}
 //				System.out.println("File downloaded");
+				
 			}
 			
 			
+	}
+
+
+
+	public boolean isSending() {
+		return sendFile;
 	}
 	
 

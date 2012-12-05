@@ -31,7 +31,10 @@ public class CheckInputs implements Runnable {
 							{
 							String textToSend = toCheck.getUserName()+": "+ChatEncoder.decodeString(text);
 							personTo.sendMessage(ChatEncoder.encodeString(textToSend));
-							System.out.println(toCheck.getUserName()+": "+ChatEncoder.decodeString(text));
+								if(!toCheck.isSending())
+								{
+								System.out.println(toCheck.getUserName()+": "+ChatEncoder.decodeString(text));
+								}
 							} else {
 								toCheck.checkCommand(ChatEncoder.decodeString(text));
 							}

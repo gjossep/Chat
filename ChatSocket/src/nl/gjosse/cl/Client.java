@@ -201,7 +201,7 @@ public class Client implements Runnable {
 
 	private void sendFile() {
 		File sending = Window.fileToSend;
-		sendText("/file:"+sending.getName());
+		sendText("/file:"+sending.getName()+":"+sending.length());
 		try{
 		OutputStream output = socket.getOutputStream();	
 			
@@ -216,7 +216,6 @@ public class Client implements Runnable {
 		        output.write(buffer,0,bytesRead);
 				 output.flush();
 		    }
-		 	output.write(-1);
 		 	
 			
 		} catch(Exception e) {
