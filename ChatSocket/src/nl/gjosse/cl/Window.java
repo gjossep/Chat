@@ -119,7 +119,7 @@ public class Window {
 		lblUsername.setBounds(20, 96, 88, 16);
 		frame.getContentPane().add(lblUsername);
 		
-		txtUsername = new JTextField();
+		txtUsername = new JTextField("Gjosse");
 		txtUsername.setBounds(93, 90, 134, 28);
 		frame.getContentPane().add(txtUsername);
 		txtUsername.setColumns(10);
@@ -128,7 +128,7 @@ public class Window {
 		lblPerson.setBounds(47, 136, 61, 16);
 		frame.getContentPane().add(lblPerson);
 		
-		txtPerson = new JTextField();
+		txtPerson = new JTextField("Gjosse");
 		txtPerson.setBounds(93, 130, 134, 28);
 		frame.getContentPane().add(txtPerson);
 		txtPerson.setColumns(10);

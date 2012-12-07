@@ -27,7 +27,7 @@ public class CheckInputs implements Runnable {
 						String text = in.readLine();
 						if(text!=null)
 						{
-							if(!ChatEncoder.decodeString(text).startsWith("/"))
+							if(!ChatEncoder.decodeString(text).startsWith("/*/"))
 							{
 							String textToSend = toCheck.getUserName()+": "+ChatEncoder.decodeString(text);
 							personTo.sendMessage(ChatEncoder.encodeString(textToSend));
