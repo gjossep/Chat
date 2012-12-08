@@ -182,31 +182,32 @@ public class User {
 			}
 			
 			if(text.startsWith("file")) {
-//				userByName.sendMessage("[*"+text+"*]");
-//				sendFile = true;
-				String[] split = text.split(":");
-				File newFile = new File(System.getProperty("user.home"), "Downloads/"+split[1]);
 
+				String[] split = text.split(":");
+				//File newFile = new File(System.getProperty("user.home"), "Downloads/"+split[1]);
+				userByName.sendMessage("[*file:" + split[1] + ":" + split[2]+"*]");
 			    try {
 				    InputStream input = clientSocket.getInputStream();
-					FileOutputStream out = new FileOutputStream(newFile);
+					//FileOutputStream out = new FileOutputStream(newFile);
 					byte[] buffer = new byte[1024 * 1024];
 					int size = Integer.parseInt(split[2]);
 					int bytesReceived = 0;
+					OutputStream output = userByName.clientSocket.getOutputStream();
 
 					while (size > 0 && (bytesReceived = input.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1)     
 			        {     
-			            out.write(buffer, 0, bytesReceived);     
 			            size -= bytesReceived;
 			            System.out.println("Size: "+size);
 			            System.out.println("Bytes R: "+bytesReceived);
+			            output.write(buffer, 0, bytesReceived);
+			            output.flush();
 			        } 
-					out.close();
+					//out.close();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				System.out.println("File downloaded");
-				sendFiletoUser(newFile);
+				//sendFiletoUser(newFile);
 				
 			}
 			

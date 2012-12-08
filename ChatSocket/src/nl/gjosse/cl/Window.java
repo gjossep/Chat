@@ -31,6 +31,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JProgressBar;
 
 public class Window {
 
@@ -41,10 +42,10 @@ public class Window {
 	private JTextField txtPort;
 	private JTextField textField;
 	private static JTextArea textArea;
-	
+	private static JProgressBar downloadBar;
 	public static File fileToSend;
 	
-
+	private static int maxByte;
 	
 	Client client;
 	
@@ -79,7 +80,7 @@ public class Window {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 599, 415);
+		frame.setBounds(100, 100, 609, 424);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -179,7 +180,7 @@ public class Window {
 				textField.setText("");
 			}
 		});
-		btnSend.setBounds(498, 342, 81, 29);
+		btnSend.setBounds(508, 342, 81, 29);
 		frame.getContentPane().add(btnSend);
 		
 		JButton btnFile = new JButton("File");
@@ -197,8 +198,15 @@ public class Window {
 			        } 
 			}
 		});
-		btnFile.setBounds(498, 365, 81, 29);
+		btnFile.setBounds(508, 365, 81, 29);
 		frame.getContentPane().add(btnFile);
+		
+		downloadBar = new JProgressBar();
+		downloadBar.setEnabled(true);
+		downloadBar.setStringPainted(true);
+		downloadBar.setBounds(239, 365, 268, 29);
+		downloadBar.setVisible(false);
+		frame.getContentPane().add(downloadBar);
 
 	}
 	
@@ -254,5 +262,24 @@ public class Window {
 		    	  textArea.append(text);
 		      }
 		    });
+	}
+	
+	public static void setBarVisable(boolean b)
+	{
+		downloadBar.setVisible(b);
+	}
+	
+	public static void setUpBar(int max, int min, int start)
+	{
+		maxByte = max;
+		downloadBar.setMaximum(max);
+		downloadBar.setMinimum(min);
+		downloadBar.setValue(start);
+	}
+	public static void incressBar(int value)
+	{
+		downloadBar.setValue(value);
+		double progress = Math.ceil((value * 100)/ maxByte);
+		downloadBar.setString(progress+"%");
 	}
 }

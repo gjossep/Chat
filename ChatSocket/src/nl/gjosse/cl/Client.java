@@ -21,6 +21,7 @@ import java.util.TimerTask;
 
 import javax.swing.JTextArea;
 
+
 public class Client implements Runnable {
 	static Socket socket;
 	static boolean stop = false;
@@ -30,6 +31,7 @@ public class Client implements Runnable {
 	String ip;
 	int port;
 
+	static Downloader dwl;
 	static boolean sendingFile = false;
 
 	static boolean isServerOn = false;
@@ -50,8 +52,7 @@ public class Client implements Runnable {
 			socket = new Socket(ip, port);
 			isServerOn = true;
 			DataInputStream in = new DataInputStream(socket.getInputStream());
-			DataOutputStream out = new DataOutputStream(
-					socket.getOutputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
 			Scanner scan = new Scanner(System.in);
 			System.out.println("Made a connection with " + in.readUTF());
@@ -98,31 +99,56 @@ public class Client implements Runnable {
 			getFile(command);
 		}
 		if (command.equalsIgnoreCase("dwlComp")) {
-			sendingFile = false;
+			Timer time = new Timer();
+			TimerTask stopSending = new TimerTask() {
+				
+				@Override
+				public void run() {
+					sendingFile = false;					
+				}
+			};
+			time.schedule(stopSending, 1000L);
 		}
+//		if(command.startsWith("makeSocket"))
+//		{
+//			String[] split = command.split(":");
+//			getFile(split[1], Integer.parseInt(split[2]));
+//		}
 	}
 
-	private static void getFile(String text) {
-		System.out.println("Getting file...");
-		String[] split = text.split(":");
-		File newFile = new File(System.getProperty("user.home"), "Downloads/"
-				+ split[1]);
-		int totalSize = 0;
 
+	private static void getFile(String stuff) {
+		System.out.println("Getting file...");
+		String[] split = stuff.split(":");
+		File file = new File(System.getProperty("user.home")+"/Downloads", split[1]);
+		int size = Integer.parseInt(split[2]);
+		downloadFile(file, size);
+		//dwl = new Downloader(file, size);
+		//Thread th = new Thread(dwl);
+		//th.start();
+	}
+
+	private static void downloadFile(File file, int size) {
+		final dataKeeper dk = new dataKeeper();
+		Long oldTime = 0L;
+		Long newTime = 0L;
+		
 		try {
 			InputStream input = socket.getInputStream();
-			FileOutputStream out = new FileOutputStream(newFile);
+			FileOutputStream out = new FileOutputStream(file);
 			byte[] buffer = new byte[1024 * 1024];
-			int size = Integer.parseInt(split[2]);
 			int bytesReceived = 0;
 
-			while ((bytesReceived = input.read(buffer, 0,
-					(int) Math.min(buffer.length, size))) != -1) {
+			Window.setUpBar(size, 0, 0);
+			Window.setBarVisable(true);
+
+			oldTime = System.nanoTime();
+			while ((bytesReceived = input.read(buffer, 0,(int) Math.min(buffer.length, size))) != -1) {
 				out.write(buffer, 0, bytesReceived);
 				size -= bytesReceived;
-				System.out.println("Size: " + size);
-				System.out.println("Bytes R: " + bytesReceived);
-				totalSize += bytesReceived;
+				dk.totalDownloaded += bytesReceived;
+
+				Window.incressBar(dk.totalDownloaded);
 				if (bytesReceived == 0 && size == 0) {
 					break;
 				}
@@ -131,8 +157,13 @@ public class Client implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("File downloaded, Total Size: " + totalSize);
-		sendText("/*/dwlComp");
+		newTime = System.nanoTime();
+		double timeTaken = (oldTime - newTime) / 1000000;
+		double DoneSize = (dk.totalDownloaded/1000000);
+		System.out.println("Download Complete!, Total Size: " + DoneSize+" mb, Taken time: "+timeTaken);
+		Client.sendText("/*/dwlComp");
+		Window.setBarVisable(false);
+
 	}
 
 	private static void shutDown() {
@@ -199,25 +230,82 @@ public class Client implements Runnable {
 	}
 
 	private static void sendFile() {
-		File sending = Window.fileToSend;
-		sendText("/*/file:" + sending.getName() + ":" + sending.length());
-		try {
-			OutputStream output = socket.getOutputStream();
-			sendingFile = true;
-			FileInputStream fileInputStream = new FileInputStream(sending);
-			int amountOfBytes = fileInputStream.available();
-			System.out.println(amountOfBytes);
-			byte[] buffer = new byte[1024 * 1024];
-			int bytesRead = 0;
+		Runnable run = new Runnable() {
+			
+			@Override
+			public void run() {
+				File sending = Window.fileToSend;
+				sendText("/*/file:"+sending.getName()+":"+sending.length());
+				double DoneSize = sending.length() / 1000000;
+				int trueUploaded = 0;
+				Window.setUpBar((int)sending.length(), 0, 0);
+				Window.setBarVisable(true);
 
-			while ((bytesRead = fileInputStream.read(buffer)) > 0 || !(sendingFile)) {
-				output.write(buffer, 0, bytesRead);
-				output.flush();
+				try {
+					OutputStream output = socket.getOutputStream();
+					Client.sendingFile = true;
+					
+					FileInputStream fileInputStream = new FileInputStream(sending);
+					int amountOfBytes = fileInputStream.available();
+					System.out.println(amountOfBytes);
+					byte[] buffer = new byte[1024 * 1024];
+					int bytesRead = 0;
+					while ((bytesRead = fileInputStream.read(buffer)) > 0|| !(Client.sendingFile)) {
+						output.write(buffer, 0, bytesRead);
+						output.flush();
+						trueUploaded += bytesRead;
+						Window.incressBar(trueUploaded);
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println("Upload Complele! , Total Size: "+DoneSize+" mb. Bytes Sent: "+trueUploaded);
+				Window.setBarVisable(false);				
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		};
+		
+		Thread th = new Thread(run);
+		th.start();
+		
+//		File sending = Window.fileToSend;
+//		sendText("/*/file:"+sending.getName()+":"+sending.length());
+//		double DoneSize = sending.length() / 1000000;
+//		
+//		Window.setUpBar((int)sending.length(), 0, 0);
+//		Window.setBarVisable(true);
+//
+//		try {
+//			OutputStream output = socket.getOutputStream();
+//			Client.sendingFile = true;
+//			
+//			FileInputStream fileInputStream = new FileInputStream(sending);
+//			int amountOfBytes = fileInputStream.available();
+//			System.out.println(amountOfBytes);
+//			byte[] buffer = new byte[1024 * 1024];
+//			int bytesRead = 0;
+//			int trueUploaded = 0;
+//			while ((bytesRead = fileInputStream.read(buffer)) > 0|| !(Client.sendingFile)) {
+//				output.write(buffer, 0, bytesRead);
+//				output.flush();
+//				trueUploaded += bytesRead;
+//				Window.incressBar(trueUploaded);
+//			}
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		System.out.println("Upload Complele! , Total Size: "+DoneSize+" mb.");
+//		Window.setBarVisable(false);
+		
+//		Uploader up = new Uploader(sending, socket);
+//		Thread th = new Thread(up);
+//		th.start();
 	}
-
+	
+	static class dataKeeper
+    {
+    	public int totalDownloaded = 0;
+    }
 }
+
