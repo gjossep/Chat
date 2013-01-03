@@ -1,49 +1,49 @@
 package nl.gjosse.cl;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JSeparator;
-import javax.swing.SwingUtilities;
-
-import nl.gjosse.MultiThreadedServer;
-
 import java.awt.Color;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDropEvent;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+import org.apache.commons.net.ftp.FTPClient;
 
 public class Window {
 
 	private JFrame frame;
-	private JTextField txtUsername;
+	private JLabel txtUsername;
 	private JTextField txtPerson;
-	private JTextField txtIp;
+	private JLabel txtIp;
 	private JTextField txtPort;
 	private JTextField textField;
 	private static JTextArea textArea;
 	private static JProgressBar downloadBar;
 	public static File fileToSend;
+	
+	static String username;
+	static String ipAddress;
 	
 	private static int maxByte;
 	
@@ -54,7 +54,9 @@ public class Window {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void start(String name, String ip) {
+		username = name;
+		ipAddress = ip;
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -120,16 +122,15 @@ public class Window {
 		lblUsername.setBounds(20, 96, 88, 16);
 		frame.getContentPane().add(lblUsername);
 		
-		txtUsername = new JTextField("Gjosse");
+		txtUsername = new JLabel("Gjosse");
 		txtUsername.setBounds(93, 90, 134, 28);
 		frame.getContentPane().add(txtUsername);
-		txtUsername.setColumns(10);
 		
 		JLabel lblPerson = new JLabel("Person:");
 		lblPerson.setBounds(47, 136, 61, 16);
 		frame.getContentPane().add(lblPerson);
 		
-		txtPerson = new JTextField("Gjosse");
+		txtPerson = new JTextField("");
 		txtPerson.setBounds(93, 130, 134, 28);
 		frame.getContentPane().add(txtPerson);
 		txtPerson.setColumns(10);
@@ -138,10 +139,9 @@ public class Window {
 		lblIp.setBounds(77, 195, 31, 16);
 		frame.getContentPane().add(lblIp);
 		
-		txtIp = new JTextField(getIp());
+		txtIp = new JLabel(ipAddress);
 		txtIp.setBounds(93, 189, 134, 28);
 		frame.getContentPane().add(txtIp);
-		txtIp.setColumns(10);
 		
 		JLabel lblPort = new JLabel("Port:");
 		lblPort.setBounds(65, 229, 36, 16);
@@ -227,6 +227,7 @@ public class Window {
 		active = new Thread(client);
 		active.start();
 	}
+	
 	
 	public void stop()
 	{

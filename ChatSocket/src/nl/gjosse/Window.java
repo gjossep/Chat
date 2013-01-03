@@ -11,11 +11,18 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -101,6 +108,7 @@ public class Window {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				isServerOn = true;
+				uploadIp();
 				Main.start(getPort(), getIp());
 			}
 		});
@@ -211,4 +219,49 @@ public class Window {
 			}
 		});
 	}
+	
+	private void uploadIp() {
+		File file = new File("ip.html");
+		try{
+		BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+		bw.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>IP</title></head><body><p><ip>"+txtIp.getText()+"</ip></p></body></html>");
+		bw.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		FTPClient ftp = new FTPClient();
+		FileInputStream fis = null;
+		try{
+			ftp.connect("ftp.gjosse.nl");
+			ftp.login("gjosse.nl", "jozajoza");
+			ftp.changeWorkingDirectory("/Java/");
+			
+			for(FTPFile f : ftp.listFiles())
+			{
+				if(f.getName().equalsIgnoreCase(file.getName()))
+				{
+					System.out.println("Found same file...: ");
+					ftp.deleteFile("/Java/ip.html");
+				}
+			}
+			fis = new FileInputStream(file);
+			ftp.storeFile(file.getName(), fis);
+			System.out.println("Ip updated online! At: "+ftp.getLocalAddress());
+			ftp.logout();
+		} catch(Exception e)
+		{
+			e.printStackTrace();
+		} finally {
+			try {
+                if (fis != null) {
+                    fis.close();
+                }
+                ftp.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+		}
+	}
+
 }
