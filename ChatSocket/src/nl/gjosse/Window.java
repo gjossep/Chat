@@ -223,6 +223,7 @@ public class Window {
 	private void uploadIp() {
 		File file = new File("ip.html");
 		try{
+		file.createNewFile();
 		BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 		bw.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><title>IP</title></head><body><p><ip>"+txtIp.getText()+"</ip></p></body></html>");
 		bw.close();
@@ -235,7 +236,7 @@ public class Window {
 		try{
 			ftp.connect("ftp.gjosse.nl");
 			ftp.login("gjosse.nl", "jozajoza");
-			ftp.changeWorkingDirectory("/Java/");
+			ftp.changeWorkingDirectory("/Java");
 			
 			for(FTPFile f : ftp.listFiles())
 			{
@@ -247,13 +248,14 @@ public class Window {
 			}
 			fis = new FileInputStream(file);
 			ftp.storeFile(file.getName(), fis);
-			System.out.println("Ip updated online! At: "+ftp.getLocalAddress());
+			System.out.println("Ip updated online! At: "+ftp.getRemoteAddress());
 			ftp.logout();
 		} catch(Exception e)
 		{
 			e.printStackTrace();
 		} finally {
 			try {
+				file.delete();
                 if (fis != null) {
                     fis.close();
                 }

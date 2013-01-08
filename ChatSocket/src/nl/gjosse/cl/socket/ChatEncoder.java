@@ -1,4 +1,4 @@
-package nl.gjosse.cl;
+package nl.gjosse.cl.socket;
 
 public class ChatEncoder {
 

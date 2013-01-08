@@ -18,6 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import nl.gjosse.main.SQL.SqlManger;
+
 import org.apache.commons.lang3.StringUtils;
 import javax.swing.JPasswordField;
 import javax.swing.ImageIcon;
@@ -30,7 +32,7 @@ public class Login {
 	private JTextField textUser;
 	private JLabel lblPassword;
 	private JPasswordField textPass;
-	private JLabel Status;
+	private static JLabel Status;
 	private JButton btnLogin;
 	
 	private boolean logginIn = false;
@@ -49,6 +51,11 @@ public class Login {
 				}
 			}
 		});
+		if(!SqlManger.startSQL())
+		{
+			Status.setForeground(Color.RED.darker());
+			Status.setText("Can't get accounts! Try again!");
+		}
 	}
 
 	/**
@@ -63,7 +70,8 @@ public class Login {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 339, 506);
+		frame.setResizable(false);
+		frame.setBounds(100, 100, 340, 507);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -118,6 +126,16 @@ public class Login {
 		logo.setIcon(new ImageIcon(Login.class.getResource("/nl/gjosse/cl/chat-icon.png")));
 		logo.setBounds(29, 6, 291, 240);
 		frame.getContentPane().add(logo);
+		
+		JButton btnRegister = new JButton("Register");
+		btnRegister.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				RegisterWindow.start();
+			}
+		});
+		btnRegister.setBounds(95, 433, 117, 29);
+		frame.getContentPane().add(btnRegister);
 	}
 
 	protected void login() {
@@ -129,7 +147,15 @@ public class Login {
 					btnLogin.setEnabled(false);
 					String ipAddress = getIpFromWeb();
 					System.out.println(ipAddress);
-					LoginSuccess(ipAddress);
+					if(SqlManger.checkUser(textUser.getText(), textPass.getText()))
+					{
+						LoginSuccess(ipAddress);
+					} else {
+						Status.setForeground(Color.red.darker());
+						Status.setText("Wrong username or password!");
+						logginIn = false;
+						btnLogin.setEnabled(true);					
+						}
 				} else {
 					Status.setForeground(Color.RED);
 					Status.setText("Password field is blank!");

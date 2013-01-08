@@ -1,4 +1,4 @@
-package nl.gjosse.cl;
+package nl.gjosse.cl.socket;
 
 import java.awt.EventQueue;
 import java.beans.Encoder;
@@ -21,10 +21,12 @@ import java.util.TimerTask;
 
 import javax.swing.JTextArea;
 
+import nl.gjosse.cl.Window;
+
 
 public class Client implements Runnable {
 	static Socket socket;
-	static boolean stop = false;
+	public static boolean stop = false;
 
 	String userName;
 	String person;

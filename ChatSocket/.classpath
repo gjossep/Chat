@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="/Users/gjossep/Downloads/commons-lang3-3.1/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="/Users/gjossep/Downloads/commons-net-3.2/commons-net-3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/gjossep/Downloads/mysql-connector-java-5.1.22/mysql-connector-java-5.1.22-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

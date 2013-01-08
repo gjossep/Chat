@@ -1,4 +1,4 @@
-package nl.gjosse.cl;
+package nl.gjosse.cl.socket;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import nl.gjosse.cl.Window;
 
 public class Uploader implements Runnable {
 	File sending;

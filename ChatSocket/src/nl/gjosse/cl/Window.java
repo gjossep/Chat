@@ -28,6 +28,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import nl.gjosse.cl.socket.Client;
+
 import org.apache.commons.net.ftp.FTPClient;
 
 public class Window {
